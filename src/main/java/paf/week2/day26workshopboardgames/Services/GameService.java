@@ -11,6 +11,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import paf.week2.day26workshopboardgames.Utils;
 import paf.week2.day26workshopboardgames.Models.Game;
+import paf.week2.day26workshopboardgames.Models.GameDetails;
 import paf.week2.day26workshopboardgames.Repositories.GameRepository;
 
 @Service
@@ -53,6 +54,13 @@ public class GameService {
             .build();
 
         return jsonObject;  
+    }
+
+    public JsonObject getGamesById(int id) {
+
+        GameDetails gameDet =  gameRepo.getGameById(id);
+
+        return Utils.toJsonObject(gameDet);
     }
     
 }

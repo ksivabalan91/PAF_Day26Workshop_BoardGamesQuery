@@ -3,9 +3,11 @@ package paf.week2.day26workshopboardgames.Controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import paf.week2.day26workshopboardgames.Services.GameService;
 
@@ -35,5 +37,20 @@ public class GameController {
         
         return ResponseEntity.ok().body(gameObj.toString());
     }
+
+    @GetMapping(path="/game/{id}")
+    public ResponseEntity<String> gameDetailsByRank(@PathVariable int id){
+
+        try{
+            JsonObject gameObj= gameSvc.getGamesById(id);        
+            return ResponseEntity.ok().body(gameObj.toString());
+        }catch(Exception ex){
+            System.out.println(ex.getMessage());
+            JsonObject jsonObj = Json.createObjectBuilder().add("Message", "Game id not found").build();
+            return ResponseEntity.badRequest().body(jsonObj.toString());
+        }
+    }
+
+
     
 }

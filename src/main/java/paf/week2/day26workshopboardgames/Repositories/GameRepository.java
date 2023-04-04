@@ -1,5 +1,6 @@
 package paf.week2.day26workshopboardgames.Repositories;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.bson.Document;
@@ -8,14 +9,17 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import paf.week2.day26workshopboardgames.Models.Game;
+import paf.week2.day26workshopboardgames.Models.GameDetails;
 
 @Repository
 public class GameRepository {
@@ -69,5 +73,26 @@ public class GameRepository {
         int count = (int)template.count(new Query(), "games");
         return count;
     }
+    public GameDetails getGameById(int id) {
+        //! find gamedetails
+        List<GameDetails> gameList  = template.find(new Query(Criteria.where("gid").is(id)), GameDetails.class,"games");
+        
+        //! find average
+        GroupOperation group = Aggregation.group().avg("ranking").as("average");
+        ProjectionOperation project = Aggregation.project().andExclude("_id");
+        Aggregation pipeline = Aggregation.newAggregation(group,project);
+        AggregationResults<Document> results = template.aggregate(pipeline,"games", Document.class);
+        
+        Document doc = results.getMappedResults().get(0);
+        float average = ((Double)doc.get("average")).floatValue();
+        
+        //! set average and timestamp
+        LocalDateTime timenow = LocalDateTime.now();
+        gameList.get(0).setAverage(average);
+        gameList.get(0).setTimestamp(timenow.toString());
+
+        return gameList.get(0);
+    }
+
     
 }
