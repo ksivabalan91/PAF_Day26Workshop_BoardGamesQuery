@@ -30,8 +30,7 @@ public class Utils {
             JsonArray jsonArr = Json.createArrayBuilder().add("Object notmapped correctly").build();
             return jsonArr;
         }
-    }
-    
+    }    
     public static JsonObject toJsonObject(Object object){
         ObjectMapper objectMapper = new ObjectMapper();        
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -47,7 +46,6 @@ public class Utils {
             return jsonObject;
         }
     }
-
     public static JsonObject docToJsonObject(Document doc){
         String jsonString = doc.toJson();
         JsonReader jsonReader = Json.createReader(new StringReader(jsonString));

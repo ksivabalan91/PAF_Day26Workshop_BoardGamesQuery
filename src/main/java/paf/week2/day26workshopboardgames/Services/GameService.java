@@ -37,5 +37,22 @@ public class GameService {
         return jsonObject;       
 
     }
+
+    public JsonObject getGamesByRank(int limit, int offset) {
+        List<Game> gameArr = gameRepo.getGamesSortByRank(limit, offset);
+        JsonArray jsonGameArr = Utils.toJsonArray(gameArr);
+        int gameCount = gameRepo.getTotalGames();        
+        LocalDateTime timenow = LocalDateTime.now();
+        
+        JsonObject jsonObject = Json.createObjectBuilder()
+            .add("games", jsonGameArr)
+            .add("offset", offset)
+            .add("limit", limit)
+            .add("total", gameCount)
+            .add("timestamp", timenow.toString())
+            .build();
+
+        return jsonObject;  
+    }
     
 }

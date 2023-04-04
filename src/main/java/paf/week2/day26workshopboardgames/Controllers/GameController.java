@@ -25,5 +25,15 @@ public class GameController {
         
         return ResponseEntity.ok().body(gameObj.toString());
     }
+    @GetMapping(path="/games/rank")
+    public ResponseEntity<String> gameDetailsByRank(@RequestParam(name="limit", required = false) Integer inputLimit, @RequestParam(name="offset", required = false) Integer inputOffset){
+        
+        int offset = inputOffset != null ? inputOffset : 0;
+        int limit = inputLimit != null ? inputLimit : 25;
+        System.out.println("offset:"+offset+" , limit:"+limit);
+        JsonObject gameObj= gameSvc.getGamesByRank(limit, offset);
+        
+        return ResponseEntity.ok().body(gameObj.toString());
+    }
     
 }

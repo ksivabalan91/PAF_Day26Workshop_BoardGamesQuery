@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.SkipOperation;
-import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
@@ -42,6 +43,22 @@ public class GameRepository {
 
         //! build pipeline
         Aggregation pipeline = Aggregation.newAggregation(dataFilter, skip, limitby);
+
+        //! execute query
+        AggregationResults<Game> results = template.aggregate(pipeline, "games", Game.class);
+
+        return results.getMappedResults();
+    }
+    public List<Game> getGamesSortByRank(int limit, int offset) {
+
+        //! operations
+        SkipOperation skip = Aggregation.skip(offset);
+        LimitOperation limitby = Aggregation.limit(limit);
+        SortOperation sortby = Aggregation.sort(Direction.ASC, "ranking");
+        ProjectionOperation dataFilter = Aggregation.project("gid","name").andExclude("_id");
+
+        //! build pipeline
+        Aggregation pipeline = Aggregation.newAggregation(skip, limitby, sortby,dataFilter);
 
         //! execute query
         AggregationResults<Game> results = template.aggregate(pipeline, "games", Game.class);
